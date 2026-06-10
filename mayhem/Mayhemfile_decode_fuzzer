@@ -1,0 +1,12 @@
+project: mpg123
+target: decode_fuzzer
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/decode_fuzzer/testsuite
+cmds:
+  - cmd: /mayhem/decode_fuzzer
+    libfuzzer: true
+    # mpg123 can livelock in frame resync on malformed input; the harness has a 10s CPU watchdog,
+    # this caps per-testcase wall time in the cloud so a slow/looping input is a timeout, not a stall.
+    timeout: 25
+    dictionary: /mayhem/mayhem/mp3.dict

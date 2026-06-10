@@ -1,0 +1,39 @@
+# mp3.dict — libFuzzer dictionary for the mpg123 MP3 decoder harnesses.
+# No upstream/OSS-Fuzz .dict ships for mpg123, so this is crafted from the MPEG-audio bitstream
+# structure: frame-sync words for the MPEG-1/2/2.5 x Layer I/II/III combinations the decoder must
+# parse, the container/metadata magics libmpg123 recognises (ID3v1/ID3v2, APE, LYRICS, Xing/Info/
+# VBRI VBR headers, the 'LAME' encoder tag, free-format), so the fuzzer can synthesise valid frame
+# headers and tag blocks instead of brute-forcing the 12-bit sync + header fields.
+
+# ---- MPEG frame sync (11 set bits) + version/layer/protection of byte 1 ----
+# byte0 is always 0xFF; byte1 high nibble 0xF/0xE selects MPEG version & layer.
+sync_mpeg1_layer3      = "\xff\xfb"
+sync_mpeg1_layer3_crc  = "\xff\xfa"
+sync_mpeg1_layer2      = "\xff\xfd"
+sync_mpeg1_layer1      = "\xff\xff"
+sync_mpeg2_layer3      = "\xff\xf3"
+sync_mpeg2_layer2      = "\xff\xf5"
+sync_mpeg2_layer1      = "\xff\xf7"
+sync_mpeg25_layer3     = "\xff\xe3"
+sync_mpeg25_layer2     = "\xff\xe5"
+sync_mpeg25_layer1     = "\xff\xe7"
+
+# ---- Full plausible 4-byte headers (sync + bitrate/srate/mode bytes) ----
+hdr_mp3_128_44100_mono   = "\xff\xfb\x90\xc0"
+hdr_mp3_128_44100_stereo = "\xff\xfb\x90\x00"
+hdr_mp3_320_44100_stereo = "\xff\xfb\xe0\x00"
+hdr_mp3_64_48000_mono    = "\xff\xfb\x54\xc0"
+hdr_mp3_32_32000_mono    = "\xff\xfb\x18\xc0"
+
+# ---- VBR / encoder info tags found inside the first frame ----
+tag_xing = "Xing"
+tag_info = "Info"
+tag_vbri = "VBRI"
+tag_lame = "LAME"
+
+# ---- Metadata containers libmpg123 skips/parses ----
+tag_id3v2   = "ID3"
+tag_id3v1   = "TAG"
+tag_ape     = "APETAGEX"
+tag_lyrics  = "LYRICS200"
+tag_lyrics_begin = "LYRICSBEGIN"

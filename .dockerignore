@@ -1,0 +1,26 @@
+# .dockerignore for the commit-image build.
+# Goal: bake in the FULL repo (including .git history — the grader uses it),
+# dropping only local build artifacts and editor/OS cruft. Dev image, not minimal.
+# Lands at the fork root (the build context) when the template is copied in.
+
+# ── Build outputs / local cruft ──────────────────────────────────────────────
+# Keep build artifacts out of the context — the COPY boundary is what separates
+# source from artifacts. build.sh produces its outputs under /mayhem at build time.
+# Adjust the patterns per project.
+# NB: mpg123's tracked autotools aux dir is `build/` (config.guess, install-sh, ltmain.sh, …) — it
+# is SOURCE, not a build output, so it must NOT be ignored or configure dies ("cannot find
+# install-sh"). build.sh builds out-of-prefix into a mktemp dir, so there is no in-tree build output
+# to drop here.
+out/
+mayhem-build/
+mayhem-tests/
+*.o
+*.a
+*.so
+*.dylib
+**/__pycache__/
+
+# ── Editor / OS noise ────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*~
